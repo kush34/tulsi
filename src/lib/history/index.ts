@@ -21,3 +21,6 @@ export type { RedFlagCandidate } from "./rules/red-flags";
 export { evaluateContradictions } from "./rules/contradictions";
 export type { ContradictionCandidate } from "./rules/contradictions";
 export { getMissingFields } from "./rules/missing-info";
+export { addFact, editFact, verifyFact, setFlagStatus } from "./fact-ops";
+export { confirmHistory, finalizeHistory, getReviewHistory } from "./review";
+export { buildSectionsFromFacts, materializeSnapshot } from "./snapshot";

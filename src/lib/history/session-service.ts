@@ -1,15 +1,12 @@
-import { Prisma } from "@prisma/client";
+import { Role } from "@prisma/client";
 import { db } from "@/db";
 import { ConflictError, NotFoundError } from "@/lib/errors";
-import { createLogger } from "@/lib/logging";
-import { createAIProvider } from "@/lib/ai";
 import { recordAuditEvent } from "@/lib/auth/notifications";
 import { getSection } from "./sections";
 import { assertTransition } from "./state";
 import { getSessionForActor, assembleSessionPayload } from "./session-state";
 import type { Actor } from "./session-state";
-
-const log = createLogger("history-service");
+import { materializeSnapshot } from "./snapshot";
 
 export interface CreateSessionInput {
   appointmentId?: string | null;
@@ -21,21 +18,6 @@ function firstChiefComplaintQuestion() {
   return { question: section?.fallbackQuestions[0] ?? "Please describe your main health concern.", section };
 }
 
-function buildFallbackSummary(
-  sections: Record<string, { field: string; value: string }[]>,
-  redFlagAlerts: string[]
-): string {
-  const lines: string[] = [];
-  for (const [sectionId, facts] of Object.entries(sections)) {
-    if (!facts.length) continue;
-    const label = getSection(sectionId)?.label ?? sectionId;
-    lines.push(`${label}: ${facts.map((f) => `${f.field} — ${f.value}`).join("; ")}`);
-  }
-  lines.push("This summary is an AI-generated DRAFT and has not been reviewed by a clinician.");
-  if (redFlagAlerts.length) lines.push("Important: the following were flagged for human review — " + redFlagAlerts.join("; "));
-  return lines.join("\n");
-}
-
 export async function createHistorySession(
   actor: Actor,
   input: CreateSessionInput,
@@ -44,7 +26,7 @@ export async function createHistorySession(
   const active = await db.historySession.findFirst({
     where: {
       patientId: actor.id,
-      status: { in: ["IN_PROGRESS", "PAUSED", "PATIENT_REVIEW"] },
+      status: { in: ["IN_PROGRESS", "PAUSED", "PATIENT_REVIEW", "DOCTOR_REVIEW"] },
     },
     select: { id: true, status: true },
   });
@@ -122,52 +104,6 @@ export async function resumeHistorySession(sessionId: string, actor: Actor) {
   return updated;
 }
 
-async function materializeSnapshot(sessionId: string, actor: Actor, ip?: string) {
-  const facts = await db.historyFact.findMany({ where: { sessionId } });
-  const sections: Record<string, { field: string; value: string }[]> = {};
-  for (const fact of facts) {
-    const value =
-      typeof fact.value === "string" ? fact.value : (fact.value as { text?: string }).text ?? "";
-    sections[fact.section] ??= [];
-    sections[fact.section].push({ field: fact.field, value });
-  }
-
-  const flagRows = await db.historyFlag.findMany({
-    where: { sessionId, status: "OPEN" },
-    select: { id: true, type: true, description: true },
-  });
-  const redFlagAlerts = flagRows
-    .filter((f) => f.type === "RED_FLAG")
-    .map((f) => f.description);
-
-  const provider = createAIProvider();
-  let summary = buildFallbackSummary(sections, redFlagAlerts);
-  if (provider) {
-    try {
-      const sectionsText = Object.entries(sections)
-        .map(([id, factsList]) => `${id}: ${factsList.map((f) => `${f.field} ${f.value}`).join(", ")}`)
-        .join("\n");
-      const result = await provider.generateSummary({ sectionsText, redFlags: redFlagAlerts });
-      summary = result.summary;
-    } catch (error) {
-      log.warn({ err: error, sessionId }, "AI summary failed, using fallback");
-    }
-  }
-
-  const snapshot = await db.clinicalHistory.upsert({
-    where: { sessionId },
-    create: { sessionId, sections: sections as unknown as Prisma.InputJsonValue, summary, isVerified: false },
-    update: { sections: sections as unknown as Prisma.InputJsonValue, summary, isVerified: false },
-  });
-  await recordAuditEvent({
-    userId: actor.id,
-    event: "HISTORY.SNAPSHOT_GENERATED",
-    metadata: { sessionId, openRedFlags: redFlagAlerts.length },
-    ip,
-  });
-  return snapshot;
-}
-
 export async function requestPatientReview(sessionId: string, actor: Actor, ip?: string) {
   let session = await getSessionForActor(sessionId, actor);
   if (session.status === "PAUSED") {
@@ -217,10 +153,21 @@ export async function getDraftHistory(sessionId: string, actor: Actor) {
   };
 }
 
-export async function listHistorySessions(actor: Actor, page: number, limit: number) {
+export async function listHistorySessions(
+  actor: Actor,
+  page: number,
+  limit: number,
+  status?: string
+) {
+  const where: Record<string, unknown> = {};
+  if (actor.role === Role.PATIENT) {
+    where.patientId = actor.id;
+  }
+  if (status) where.status = status;
+
   const [sessions, total] = await Promise.all([
     db.historySession.findMany({
-      where: { patientId: actor.id },
+      where,
       orderBy: { createdAt: "desc" },
       skip: (page - 1) * limit,
       take: limit,
@@ -235,7 +182,7 @@ export async function listHistorySessions(actor: Actor, page: number, limit: num
         _count: { select: { answers: true, facts: true, flags: true } },
       },
     }),
-    db.historySession.count({ where: { patientId: actor.id } }),
+    db.historySession.count({ where }),
   ]);
   return {
     data: sessions.map((s) => ({ ...s, counts: s._count })),

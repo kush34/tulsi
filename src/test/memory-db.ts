@@ -171,6 +171,7 @@ export function resetMemoryDb(): void {
     memoryDbHistory.historyAnswer.findMany,
     memoryDbHistory.historyFact.create,
     memoryDbHistory.historyFact.update,
+    memoryDbHistory.historyFact.updateMany,
     memoryDbHistory.historyFact.findFirst,
     memoryDbHistory.historyFact.findMany,
     memoryDbHistory.historyFlag.create,
@@ -303,6 +304,22 @@ function makeHistoryQueries(table: Map<string, Row>, relations: Record<string, M
       const row = [...table.values()].find((r) => matches(r, where));
       return row ? { ...row } : null;
     }),
+    updateMany: vi.fn(
+      async ({
+        where,
+        data,
+      }: {
+        where: Record<string, unknown>;
+        data: Record<string, unknown>;
+      }) => {
+        const rows = [...table.values()].filter((r) => matches(r, where ?? {}));
+        for (const row of rows) {
+          const merged: Row = { ...row, ...data, updatedAt: new Date() };
+          table.set(row.id as string, merged);
+        }
+        return { count: rows.length };
+      }
+    ),
     findFirst: vi.fn(async ({ where, select }: { where: Record<string, unknown>; select?: Record<string, unknown> }) => {
       const row = [...table.values()].find((r) => matches(r, where));
       if (!row) return null;
@@ -453,6 +470,23 @@ export function seedHistoryFact(overrides: Partial<Row> = {}): Row {
     ...overrides,
   };
   historyFacts.set(row.id as string, row);
+  return { ...row };
+}
+
+export function seedHistoryFlag(overrides: Partial<Row> = {}): Row {
+  const seq = historyFlags.size + 1;
+  const row: Row = {
+    id: cuid(120000 + seq),
+    sessionId: "",
+    type: "RED_FLAG",
+    severity: "HIGH",
+    status: "OPEN",
+    description: "Flagged for review",
+    detectedAt: new Date(),
+    resolvedAt: null,
+    ...overrides,
+  };
+  historyFlags.set(row.id as string, row);
   return { ...row };
 }
 

@@ -1,9 +1,11 @@
 import { NextRequest } from "next/server";
 import { Role } from "@prisma/client";
-import { requireRole } from "@/lib/auth/guards";
+import { requireRole, requireAuth } from "@/lib/auth/guards";
 import { validate, validateQuery } from "@/lib/validators";
-import { paginationSchema } from "@/lib/utils/pagination";
-import { startHistorySessionSchema } from "@/lib/validators/history";
+import {
+  startHistorySessionSchema,
+  listHistorySessionsQuerySchema,
+} from "@/lib/validators/history";
 import { createHistorySession, listHistorySessions, assembleSessionPayload } from "@/lib/history";
 import { successResponse } from "@/lib/utils/api-response";
 import { withErrorHandling } from "@/lib/middleware";
@@ -24,9 +26,14 @@ export const POST = withErrorHandling(async (req: NextRequest) => {
 });
 
 export const GET = withErrorHandling(async (req: NextRequest) => {
-  const session = await requireRole(Role.PATIENT);
-  const { page, limit } = validateQuery(paginationSchema, req.nextUrl.searchParams);
+  const session = await requireAuth();
+  const query = validateQuery(listHistorySessionsQuerySchema, req.nextUrl.searchParams);
 
-  const result = await listHistorySessions({ id: session.user.id, role: session.user.role }, page, limit);
+  const result = await listHistorySessions(
+    { id: session.user.id, role: session.user.role },
+    query.page,
+    query.limit,
+    query.status
+  );
   return successResponse(result.data, 200, result.meta);
 });

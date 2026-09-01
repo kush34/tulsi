@@ -9,7 +9,8 @@ export const ALLOWED_TRANSITIONS: Record<HistorySessionStatus, HistorySessionSta
     HistorySessionStatus.CANCELLED,
   ],
   PAUSED: [HistorySessionStatus.IN_PROGRESS, HistorySessionStatus.CANCELLED],
-  PATIENT_REVIEW: [HistorySessionStatus.COMPLETED, HistorySessionStatus.CANCELLED],
+  PATIENT_REVIEW: [HistorySessionStatus.DOCTOR_REVIEW, HistorySessionStatus.CANCELLED],
+  DOCTOR_REVIEW: [HistorySessionStatus.COMPLETED, HistorySessionStatus.CANCELLED],
   COMPLETED: [],
   CANCELLED: [],
 };

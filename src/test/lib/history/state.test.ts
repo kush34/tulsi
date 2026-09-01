@@ -20,12 +20,21 @@ describe("history state machine", () => {
   it("rejects an illegal transition", () => {
     expect(canTransition("PATIENT_REVIEW", "IN_PROGRESS")).toBe(false);
     expect(() => assertTransition("PATIENT_REVIEW", "IN_PROGRESS")).toThrow(ConflictError);
+    expect(canTransition("DOCTOR_REVIEW", "IN_PROGRESS")).toBe(false);
+    expect(() => assertTransition("DOCTOR_REVIEW", "IN_PROGRESS")).toThrow(ConflictError);
+  });
+
+  it("walks the review lifecycle", () => {
+    expect(canTransition("PATIENT_REVIEW", "DOCTOR_REVIEW")).toBe(true);
+    expect(canTransition("DOCTOR_REVIEW", "COMPLETED")).toBe(true);
+    expect(canTransition("PATIENT_REVIEW", "COMPLETED")).toBe(false);
   });
 
   it("only accepts answers while IN_PROGRESS or PAUSED", () => {
     expect(isWritable("IN_PROGRESS")).toBe(true);
     expect(isWritable("PAUSED")).toBe(true);
     expect(isWritable("PATIENT_REVIEW")).toBe(false);
+    expect(isWritable("DOCTOR_REVIEW")).toBe(false);
     expect(isWritable("COMPLETED")).toBe(false);
   });
 });
