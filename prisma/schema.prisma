@@ -7,12 +7,161 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+enum Role {
+  PATIENT
+  DOCTOR
+  ADMIN
+}
+
 model User {
-  id        String   @id @default(cuid())
-  email     String   @unique
-  name      String?
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  id            String    @id @default(cuid())
+  email         String    @unique
+  name          String?
+  phone         String?   @unique
+  avatarUrl     String?
+  passwordHash  String?
+  role          Role      @default(PATIENT)
+  isVerified    Boolean   @default(false)
+  isActive      Boolean   @default(true)
+  deactivatedAt DateTime?
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  patient       PatientProfile?
+  doctor        DoctorProfile?
+  medicalProfile MedicalProfile?
+  otps          Otp[]
+  auditEvents   AuditEvent[]
+  accounts      Account[]
+  sessions      Session[]
 
   @@map("users")
+}
+
+model PatientProfile {
+  id        String   @id @default(cuid())
+  userId    String   @unique
+  dob       DateTime?
+  gender    String?
+  bloodType String?
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("patient_profiles")
+}
+
+model MedicalProfile {
+  id            String   @id @default(cuid())
+  userId        String   @unique
+  allergies     Json?
+  conditions    Json?
+  medications   Json?
+  surgeries     Json?
+  familyHistory Json?
+  socialHistory Json?
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  user    User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  changes MedicalProfileChange[]
+
+  @@map("medical_profiles")
+}
+
+model MedicalProfileChange {
+  id        String   @id @default(cuid())
+  profileId String
+  changedBy String
+  changes   Json
+  ip        String?
+  createdAt DateTime @default(now())
+
+  profile MedicalProfile @relation(fields: [profileId], references: [id], onDelete: Cascade)
+
+  @@index([profileId])
+  @@map("medical_profile_changes")
+}
+
+model DoctorProfile {
+  id                      String   @id @default(cuid())
+  userId                  String   @unique
+  specialty               String
+  licenseNumber           String?
+  yearsOfExp              Int?
+  bio                     String?
+  education               String?
+  languages               String?
+  consultationFee         Int?
+  address                 String?
+  availableForConsultation Boolean  @default(false)
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("doctor_profiles")
+}
+
+model Otp {
+  id        String   @id @default(cuid())
+  userId    String
+  codeHash  String
+  purpose   OtpPurpose
+  expiresAt DateTime
+  usedAt    DateTime?
+  createdAt DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, purpose])
+  @@map("otps")
+}
+
+enum OtpPurpose {
+  VERIFY_EMAIL
+  RESET_PASSWORD
+}
+
+model AuditEvent {
+  id        String     @id @default(cuid())
+  userId    String?
+  event     String
+  metadata  Json?
+  ip        String?
+  userAgent String?
+  createdAt DateTime   @default(now())
+
+  user User? @relation(fields: [userId], references: [id], onDelete: SetNull)
+
+  @@index([userId])
+  @@index([event])
+  @@map("audit_events")
+}
+
+model Account {
+  userId            String
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String?
+  access_token      String?
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String?
+  session_state     String?
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@id([provider, providerAccountId])
+  @@map("accounts")
+}
+
+model Session {
+  id           String   @id
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("sessions")
 }
