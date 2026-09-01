@@ -34,6 +34,7 @@ model User {
   auditEvents   AuditEvent[]
   accounts      Account[]
   sessions      Session[]
+  historySessions HistorySession[]
 
   @@map("users")
 }
@@ -164,4 +165,159 @@ model Session {
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@map("sessions")
+}
+
+enum HistorySessionStatus {
+  NOT_STARTED
+  IN_PROGRESS
+  PAUSED
+  PATIENT_REVIEW
+  COMPLETED
+  CANCELLED
+}
+
+enum HistoryAnswerInputType {
+  TEXT
+  VOICE
+  TOUCH
+  OTHER
+}
+
+enum HistoryFactSource {
+  PATIENT
+  DOCUMENT
+  AI_EXTRACTION
+  DOCTOR
+}
+
+enum HistoryFactVerification {
+  UNVERIFIED
+  PATIENT_CONFIRMED
+  DOCTOR_VERIFIED
+  REJECTED
+}
+
+enum HistoryFlagType {
+  RED_FLAG
+  CONTRADICTION
+}
+
+enum HistoryFlagStatus {
+  OPEN
+  RESOLVED
+  DISMISSED
+}
+
+model HistorySession {
+  id               String              @id @default(cuid())
+  patientId        String
+  appointmentId    String?
+  framework        String              @default("MODERN")
+  status           HistorySessionStatus @default(NOT_STARTED)
+  currentSection   String              @default("CHIEF_COMPLAINT")
+  currentQuestionId String?
+  startedAt        DateTime            @default(now())
+  completedAt      DateTime?
+  createdAt        DateTime            @default(now())
+  updatedAt        DateTime            @updatedAt
+
+  patient         User @relation(fields: [patientId], references: [id], onDelete: Cascade)
+  questions       HistoryQuestion[]
+  answers         HistoryAnswer[]
+  facts           HistoryFact[]
+  flags           HistoryFlag[]
+  clinicalHistory ClinicalHistory?
+
+  @@index([patientId, status])
+  @@index([appointmentId])
+  @@index([status])
+  @@index([createdAt])
+  @@map("history_sessions")
+}
+
+model HistoryQuestion {
+  id           String  @id @default(cuid())
+  sessionId    String
+  section      String
+  question     String
+  questionType String  @default("FREE_TEXT")
+  sequence     Int
+  metadata     Json?
+  createdAt    DateTime @default(now())
+
+  session HistorySession @relation(fields: [sessionId], references: [id], onDelete: Cascade)
+  answers HistoryAnswer[]
+
+  @@index([sessionId, sequence])
+  @@map("history_questions")
+}
+
+model HistoryAnswer {
+  id                String  @id @default(cuid())
+  sessionId         String
+  questionId        String
+  rawAnswer         String
+  normalizedAnswer  Json?
+  inputType         HistoryAnswerInputType @default(TEXT)
+  createdAt         DateTime @default(now())
+
+  question HistoryQuestion @relation(fields: [questionId], references: [id], onDelete: Cascade)
+  session  HistorySession  @relation(fields: [sessionId], references: [id], onDelete: Cascade)
+
+  @@index([sessionId])
+  @@index([questionId])
+  @@map("history_answers")
+}
+
+model HistoryFact {
+  id               String                  @id @default(cuid())
+  sessionId        String
+  section          String
+  field            String
+  value            Json
+  source           HistoryFactSource       @default(AI_EXTRACTION)
+  confidence       Float?
+  verification     HistoryFactVerification @default(UNVERIFIED)
+  sourceReference  String?
+  verifiedById     String?
+  verifiedAt       DateTime?
+  createdAt        DateTime                @default(now())
+
+  session HistorySession @relation(fields: [sessionId], references: [id], onDelete: Cascade)
+
+  @@index([sessionId, section])
+  @@index([sessionId, verification])
+  @@map("history_facts")
+}
+
+model HistoryFlag {
+  id           String           @id @default(cuid())
+  sessionId    String
+  type         HistoryFlagType
+  severity     String?
+  status       HistoryFlagStatus @default(OPEN)
+  description  String
+  details      Json?
+  resolution   String?
+  resolvedById String?
+  detectedAt   DateTime         @default(now())
+  resolvedAt   DateTime?
+
+  session HistorySession @relation(fields: [sessionId], references: [id], onDelete: Cascade)
+
+  @@index([sessionId, type, status])
+  @@map("history_flags")
+}
+
+model ClinicalHistory {
+  id          String   @id @default(cuid())
+  sessionId   String   @unique
+  sections    Json
+  summary     String?
+  isVerified  Boolean  @default(false)
+  generatedAt DateTime @default(now())
+
+  session HistorySession @relation(fields: [sessionId], references: [id], onDelete: Cascade)
+
+  @@map("clinical_histories")
 }

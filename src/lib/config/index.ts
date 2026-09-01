@@ -18,6 +18,10 @@ export const config = {
     url: env.DATABASE_URL,
   },
   ai: {
+    provider: env.AI_PROVIDER,
+    chatBaseUrl: env.AI_CHAT_BASE_URL,
+    chatModel: env.AI_CHAT_MODEL,
+    timeoutMs: env.AI_TIMEOUT_MS,
     openaiKey: env.OPENAI_API_KEY,
     anthropicKey: env.ANTHROPIC_API_KEY,
   },

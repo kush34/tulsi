@@ -13,6 +13,11 @@ const envSchema = z.object({
   OPENAI_API_KEY: z.string().optional().default(""),
   ANTHROPIC_API_KEY: z.string().optional().default(""),
 
+  AI_PROVIDER: z.enum(["none", "openai-compatible"]).default("none"),
+  AI_CHAT_BASE_URL: z.string().url().optional().default("http://localhost:11434/v1"),
+  AI_CHAT_MODEL: z.string().optional().default(""),
+  AI_TIMEOUT_MS: z.coerce.number().int().min(100).max(120000).default(15000),
+
   S3_BUCKET: z.string().optional().default(""),
   S3_REGION: z.string().optional().default(""),
   S3_ACCESS_KEY_ID: z.string().optional().default(""),
