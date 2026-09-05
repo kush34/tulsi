@@ -13,15 +13,26 @@ const envSchema = z.object({
   OPENAI_API_KEY: z.string().optional().default(""),
   ANTHROPIC_API_KEY: z.string().optional().default(""),
 
-  AI_PROVIDER: z.enum(["none", "openai-compatible"]).default("none"),
+  AI_PROVIDER: z.enum(["none", "openai-compatible", "openrouter", "ollama"]).default("none"),
   AI_CHAT_BASE_URL: z.string().url().optional().default("http://localhost:11434/v1"),
   AI_CHAT_MODEL: z.string().optional().default(""),
   AI_TIMEOUT_MS: z.coerce.number().int().min(100).max(120000).default(15000),
+
+  OPENROUTER_API_KEY: z.string().optional().default(""),
+  OPENROUTER_MODEL: z.string().optional().default(""),
+  OPENROUTER_BASE_URL: z.string().url().optional().default("https://openrouter.ai/api/v1"),
+
+  OLLAMA_BASE_URL: z.string().url().optional().default("http://localhost:11434/v1"),
+  OLLAMA_MODEL: z.string().optional().default(""),
 
   S3_BUCKET: z.string().optional().default(""),
   S3_REGION: z.string().optional().default(""),
   S3_ACCESS_KEY_ID: z.string().optional().default(""),
   S3_SECRET_ACCESS_KEY: z.string().optional().default(""),
+
+  SUPABASE_URL: z.string().optional().default(""),
+  SUPABASE_SERVICE_ROLE_KEY: z.string().optional().default(""),
+  SUPABASE_DOCS_BUCKET: z.string().optional().default("medical-documents"),
 
   RESEND_API_KEY: z.string().optional().default(""),
   EMAIL_FROM: z.string().optional().default("Tulsi <onboarding@resend.dev>"),

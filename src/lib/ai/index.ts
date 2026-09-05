@@ -1,9 +1,11 @@
 export {
   aiConfigured,
+  describeAIProvider,
   AIProviderError,
 } from "./provider";
 export type {
   AIProvider,
+  AIStatus,
   ClinicalExtractionResult,
   ExtractedFact,
   ExtractionInput,

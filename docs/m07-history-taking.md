@@ -99,13 +99,34 @@ may read any session. All state changes are audited (`HISTORY.SESSION_STARTED`, 
 `.env` (all optional):
 
 ```
-AI_PROVIDER=none                # none | openai-compatible
+AI_PROVIDER=openrouter          # none | openrouter | ollama | openai-compatible
+AI_TIMEOUT_MS=15000
+
+# OpenRouter (default cloud option)
+OPENROUTER_API_KEY=
+OPENROUTER_MODEL=               # e.g. meta-llama/llama-3.3-70b-instruct:free
+
+# Ollama (local option, no key needed)
+OLLAMA_BASE_URL=http://localhost:11434/v1
+OLLAMA_MODEL=                   # e.g. llama3.1:8b (requires `ollama pull`)
+
+# Generic OpenAI-compatible fallback
 AI_CHAT_BASE_URL=http://localhost:11434/v1
 AI_CHAT_MODEL=
-AI_TIMEOUT_MS=15000
 ```
 
-If `AI_CHAT_MODEL` is empty, the module runs fully deterministically.
+If the selected provider has no key/model configured, the module runs fully deterministically
+(rule-based fallback questions). Switch between cloud and local with `AI_PROVIDER` only.
+
+## Voice intake
+
+`/[locale]/assesment` runs a voice-first loop (`src/components/assesment/`): the current
+question is spoken via the Speech Synthesis API, the patient answers via the microphone
+(Web Speech API recognition, locale-matched) with a typed-text fallback, and answers are
+submitted with `inputType: VOICE | TEXT`. The full Q&A record is readable via
+`GET /sessions/[sessionId]/transcript` and rendered as a conversation transcript, which the
+doctor later reviews (`DOCTOR_REVIEW` → verify facts → finalize). The assistant only collects
+history — it never diagnoses (see Safety).
 
 ## Testing
 

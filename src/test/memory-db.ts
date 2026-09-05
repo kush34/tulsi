@@ -21,7 +21,7 @@ export type ProfileRow = {
   updatedAt: Date;
 } & Record<(typeof PROFILE_FIELDS)[number], unknown>;
 
-const users = new Map<string, { id: string; role: Role }>();
+const users = new Map<string, { id: string; role: Role; name?: string | null; email?: string }>();
 const profiles = new Map<string, ProfileRow>();
 const changes: {
   id: string;
@@ -147,6 +147,8 @@ export function resetMemoryDb(): void {
   historyAnswers.clear();
   historyFacts.clear();
   historyFlags.clear();
+  uploadTokens.clear();
+  patientDocuments.clear();
   clinicalHistories.clear();
   sessionState.value = null;
   const mocks = [
@@ -177,6 +179,12 @@ export function resetMemoryDb(): void {
     memoryDbHistory.historyFlag.create,
     memoryDbHistory.historyFlag.findFirst,
     memoryDbHistory.historyFlag.findMany,
+    memoryDbHistory.uploadToken.create,
+    memoryDbHistory.uploadToken.findUnique,
+    memoryDbHistory.uploadToken.findFirst,
+    memoryDbHistory.uploadToken.findMany,
+    memoryDbHistory.patientDocument.create,
+    memoryDbHistory.patientDocument.findMany,
     memoryDbHistory.clinicalHistory.findUnique,
     memoryDbHistory.clinicalHistory.upsert,
     memoryDbHistory.historySession.findMany,
@@ -187,7 +195,7 @@ export function resetMemoryDb(): void {
   }
 }
 
-export function seedUser(user: { id: string; role: Role }): void {
+export function seedUser(user: { id: string; role: Role; name?: string | null; email?: string }): void {
   users.set(user.id, user);
 }
 
@@ -344,6 +352,15 @@ function makeHistoryQueries(table: Map<string, Row>, relations: Record<string, M
         return sliced.map((r) => {
           let row: Row = { ...r };
           if (select?.question) row = join(row, { select });
+          if (select?.patient) {
+            const user = relations.patient?.get(r.patientId as string);
+            row = {
+              ...row,
+              patient: user
+                ? { id: user.id, name: (user as Row).name ?? null, email: (user as Row).email ?? null }
+                : null,
+            };
+          }
           if (select?._count) {
             row = applySelect(row, select, {
               answers: [...(relations.answer?.values() ?? [])].filter((a) => a.sessionId === r.id),
@@ -367,6 +384,8 @@ const historyAnswers = new Map<string, Row>();
 const historyFacts = new Map<string, Row>();
 const historyFlags = new Map<string, Row>();
 const clinicalHistories = new Map<string, Row>();
+const uploadTokens = new Map<string, Row>();
+const patientDocuments = new Map<string, Row>();
 
 export const memoryDbHistory = {
   $transaction: vi.fn(async (ops: Promise<unknown>[]) => Promise.all(ops)),
@@ -374,11 +393,14 @@ export const memoryDbHistory = {
     answer: historyAnswers,
     fact: historyFacts,
     flag: historyFlags,
+    patient: users as unknown as Map<string, Row>,
   }),
   historyQuestion: makeHistoryQueries(historyQuestions),
   historyAnswer: makeHistoryQueries(historyAnswers, { question: historyQuestions }),
   historyFact: makeHistoryQueries(historyFacts),
   historyFlag: makeHistoryQueries(historyFlags),
+  uploadToken: makeHistoryQueries(uploadTokens),
+  patientDocument: makeHistoryQueries(patientDocuments),
   clinicalHistory: {
     ...makeHistoryQueries(clinicalHistories),
     upsert: vi.fn(
@@ -487,6 +509,37 @@ export function seedHistoryFlag(overrides: Partial<Row> = {}): Row {
     ...overrides,
   };
   historyFlags.set(row.id as string, row);
+  return { ...row };
+}
+
+export function seedUploadToken(overrides: Partial<Row> = {}): Row {
+  const row: Row = {
+    token: `tok${uploadTokens.size + 1}`,
+    patientId: "u1",
+    historySessionId: null,
+    expiresAt: new Date(Date.now() + 30 * 60 * 1000),
+    createdAt: new Date(),
+    ...overrides,
+  };
+  uploadTokens.set(row.token as string, row);
+  return { ...row };
+}
+
+export function seedPatientDocument(overrides: Partial<Row> = {}): Row {
+  const seq = patientDocuments.size + 1;
+  const row: Row = {
+    id: cuid(130000 + seq),
+    patientId: "u1",
+    historySessionId: null,
+    fileName: "report.pdf",
+    mimeType: "application/pdf",
+    sizeBytes: 1024,
+    storagePath: "u1/report.pdf",
+    docType: "LAB_REPORT",
+    createdAt: new Date(),
+    ...overrides,
+  };
+  patientDocuments.set(row.id as string, row);
   return { ...row };
 }
 

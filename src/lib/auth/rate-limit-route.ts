@@ -8,6 +8,7 @@ export const AUTH_LIMITS = {
   OTP_REQUEST: { limit: 5, windowMs: 15 * 60 * 1000 },
   OTP_VERIFY: { limit: 10, windowMs: 15 * 60 * 1000 },
   RECOVERY: { limit: 5, windowMs: 15 * 60 * 1000 },
+  UPLOAD: { limit: 30, windowMs: 60 * 60 * 1000 },
 } as const;
 
 export function checkRateLimit(

@@ -39,6 +39,10 @@ vi.mock("@/lib/auth/guards", async () => {
   };
 });
 vi.mock("@/lib/auth/notifications", () => ({ recordAuditEvent: vi.fn() }));
+vi.mock("@/lib/ai", async () => {
+  const actual = await vi.importActual<typeof import("@/lib/ai")>("@/lib/ai");
+  return { ...actual, createAIProvider: vi.fn(() => null) };
+});
 
 import { resetMemoryDb, seedUser, setSession, seedHistorySession, seedHistoryFact, seedHistoryFlag } from "@/test/memory-db";
 

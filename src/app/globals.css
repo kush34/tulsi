@@ -24,3 +24,102 @@ body {
   color: var(--foreground);
   font-family: Arial, Helvetica, sans-serif;
 }
+
+/* =========================================================
+   Siri-style edge glow for the voice assessment
+   ========================================================= */
+
+@property --glow-angle {
+  syntax: "<angle>";
+  initial-value: 0deg;
+  inherits: false;
+}
+
+@keyframes glow-spin {
+  to {
+    --glow-angle: 360deg;
+  }
+}
+
+@keyframes glow-breathe {
+  0%,
+  100% {
+    opacity: 0.45;
+  }
+  50% {
+    opacity: 1;
+  }
+}
+
+.voice-edge-glow {
+  pointer-events: none;
+  position: fixed;
+  inset: 0;
+  z-index: 50;
+}
+
+.voice-edge-glow::before {
+  content: "";
+  position: absolute;
+  inset: 10px;
+  border-radius: 26px;
+  padding: 3px;
+  background: conic-gradient(
+    from var(--glow-angle),
+    #7dd3fc,
+    #c4b5fd,
+    #f9a8d4,
+    #67e8f9,
+    #93c5fd,
+    #7dd3fc
+  );
+  -webkit-mask:
+    linear-gradient(#fff 0 0) content-box,
+    linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  animation:
+    glow-spin 7s linear infinite,
+    glow-breathe 3.2s ease-in-out infinite;
+}
+
+.voice-edge-glow::after {
+  content: "";
+  position: absolute;
+  inset: 10px;
+  border-radius: 26px;
+  padding: 10px;
+  background: conic-gradient(
+    from var(--glow-angle),
+    rgba(125, 211, 252, 0.35),
+    rgba(196, 181, 253, 0.35),
+    rgba(249, 168, 212, 0.35),
+    rgba(103, 232, 249, 0.35),
+    rgba(125, 211, 252, 0.35)
+  );
+  -webkit-mask:
+    linear-gradient(#fff 0 0) content-box,
+    linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  filter: blur(14px);
+  animation:
+    glow-spin 7s linear infinite reverse,
+    glow-breathe 3.2s ease-in-out infinite;
+}
+
+.voice-edge-glow[data-state="speaking"]::before,
+.voice-edge-glow[data-state="speaking"]::after {
+  animation-duration:
+    12s,
+    5s;
+}
+
+.voice-edge-glow[data-state="idle"] {
+  opacity: 0.25;
+}
+
+.voice-edge-glow[data-state="idle"]::before,
+.voice-edge-glow[data-state="idle"]::after {
+  animation: none;
+}

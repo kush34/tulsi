@@ -89,7 +89,7 @@ export function useEmailOtp({ locale, callbackUrl }: Options) {
         setError(auth.errors.invalidOrExpiredOtp);
         return;
       }
-      window.location.href = safeRedirect(callbackUrl, `/${locale}/assesment`);
+      window.location.href = safeRedirect(callbackUrl, `/${locale}/assessment`);
     } catch {
       setError(auth.errors.unableToVerify);
     } finally {

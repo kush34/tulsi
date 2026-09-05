@@ -56,5 +56,35 @@ export class AIProviderError extends Error {
 }
 
 export function aiConfigured(): boolean {
-  return config.ai.provider === "openai-compatible" && config.ai.chatModel.length > 0;
+  switch (config.ai.provider) {
+    case "openrouter":
+      return config.ai.openrouter.apiKey.length > 0 && config.ai.openrouter.model.length > 0;
+    case "ollama":
+      return config.ai.ollama.model.length > 0;
+    case "openai-compatible":
+      return config.ai.chatModel.length > 0;
+    default:
+      return false;
+  }
+}
+
+export interface AIStatus {
+  provider: string;
+  active: boolean;
+  model: string | null;
+}
+
+export function describeAIProvider(): AIStatus {
+  const provider = config.ai.provider;
+  if (!aiConfigured()) return { provider, active: false, model: null };
+  switch (provider) {
+    case "openrouter":
+      return { provider, active: true, model: config.ai.openrouter.model };
+    case "ollama":
+      return { provider, active: true, model: config.ai.ollama.model };
+    case "openai-compatible":
+      return { provider, active: true, model: config.ai.chatModel };
+    default:
+      return { provider, active: false, model: null };
+  }
 }

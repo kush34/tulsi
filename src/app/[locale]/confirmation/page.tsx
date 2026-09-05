@@ -12,13 +12,5 @@ export default async function ConfirmationPage({ params }: Props) {
   const { locale } = await params;
   await requirePageSession(locale, `/${locale}/confirmation`);
 
-  // Replace with your actual assessment/session lookup.
-  const summary = {
-    mainProblem: "Chest pain for 2 days",
-    medicalConditions: "Diabetes · Hypertension",
-    medicines: "Amlodipine 5 mg · Metformin 500 mg",
-    documentsCount: 4,
-  };
-
-  return <ConfirmationSummary locale={locale} summary={summary} />;
+  return <ConfirmationSummary locale={locale} />;
 }

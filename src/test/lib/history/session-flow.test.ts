@@ -15,6 +15,10 @@ vi.mock("@/db", async () => {
   return { db: { ...memoryDb, ...memoryDbHistory } };
 });
 vi.mock("@/lib/auth/notifications", () => ({ recordAuditEvent: vi.fn() }));
+vi.mock("@/lib/ai", async () => {
+  const actual = await vi.importActual<typeof import("@/lib/ai")>("@/lib/ai");
+  return { ...actual, createAIProvider: vi.fn(() => null) };
+});
 
 import {
   createHistorySession,

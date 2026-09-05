@@ -14,6 +14,11 @@ export async function proxy(request: NextRequest) {
   }
 
   const { locale, rest } = splitLocale(pathname);
+
+  if (rest === "/upload" || rest.startsWith("/upload/")) {
+    return NextResponse.next();
+  }
+
   const session = await auth();
   const loginUrl = `/${locale}/auth`;
 
@@ -40,10 +45,11 @@ export const config = {
     "/dashboard/:path*",
     "/:locale/auth",
     "/:locale/dashboard/:path*",
-    "/:locale/assesment/:path*",
     "/:locale/assessment/:path*",
     "/:locale/document/:path*",
     "/:locale/confirmation/:path*",
+    "/:locale/profile",
+    "/:locale/upload/:path*",
     "/api/:path*",
   ],
 };

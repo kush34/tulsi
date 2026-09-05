@@ -4,10 +4,10 @@ export const AUTH_PATHS = ["/auth", "/login", "/register"];
 
 export const PROTECTED_PREFIXES = [
   "/dashboard",
-  "/assesment",
   "/assessment",
   "/document",
   "/confirmation",
+  "/profile",
 ];
 
 export function splitLocale(pathname: string): { locale: string; rest: string } {

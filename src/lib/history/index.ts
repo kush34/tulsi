@@ -5,6 +5,7 @@ export {
   createHistorySession,
   pauseHistorySession,
   resumeHistorySession,
+  cancelHistorySession,
   requestPatientReview,
   getClinicalSummary,
   getDraftHistory,
@@ -16,6 +17,8 @@ export { answerHistorySession } from "./answers";
 export type { AnswerInput } from "./answers";
 export { getSessionForActor, assembleSessionPayload } from "./session-state";
 export type { Actor, SessionPayload } from "./session-state";
+export { getSessionTranscript } from "./transcript";
+export type { TranscriptEntry } from "./transcript";
 export { evaluateRedFlags } from "./rules/red-flags";
 export type { RedFlagCandidate } from "./rules/red-flags";
 export { evaluateContradictions } from "./rules/contradictions";

@@ -28,6 +28,8 @@ export class OpenAICompatibleProvider implements AIProvider {
       model: string;
       apiKey: string;
       timeoutMs: number;
+      maxTokens: number;
+      headers?: Record<string, string>;
     }
   ) {}
 
@@ -42,6 +44,7 @@ export class OpenAICompatibleProvider implements AIProvider {
         headers: {
           "content-type": "application/json",
           ...(this.options.apiKey ? { authorization: `Bearer ${this.options.apiKey}` } : {}),
+          ...(this.options.headers ?? {}),
         },
         body: JSON.stringify({
           model: this.options.model,
@@ -50,6 +53,7 @@ export class OpenAICompatibleProvider implements AIProvider {
             { role: "user", content: user },
           ],
           temperature: 0.2,
+          max_tokens: this.options.maxTokens,
         }),
         signal: controller.signal,
       });
@@ -125,10 +129,39 @@ export class OpenAICompatibleProvider implements AIProvider {
 
 export function createAIProvider(): AIProvider | null {
   if (!aiConfigured()) return null;
-  return new OpenAICompatibleProvider({
-    baseUrl: config.ai.chatBaseUrl,
-    model: config.ai.chatModel,
-    apiKey: config.ai.openaiKey,
-    timeoutMs: config.ai.timeoutMs,
-  });
+  const timeoutMs = config.ai.timeoutMs;
+  // Bounds worst-case cost: without max_tokens, metered APIs pre-authorize
+  // the model's full context window and reject small-credit keys with 402.
+  const maxTokens = 4000;
+
+  switch (config.ai.provider) {
+    case "openrouter":
+      return new OpenAICompatibleProvider({
+        baseUrl: config.ai.openrouter.baseUrl,
+        model: config.ai.openrouter.model,
+        apiKey: config.ai.openrouter.apiKey,
+        timeoutMs,
+        maxTokens,
+        headers: {
+          "HTTP-Referer": config.app.url,
+          "X-Title": config.app.name,
+        },
+      });
+    case "ollama":
+      return new OpenAICompatibleProvider({
+        baseUrl: config.ai.ollama.baseUrl,
+        model: config.ai.ollama.model,
+        apiKey: "",
+        timeoutMs,
+        maxTokens,
+      });
+    default:
+      return new OpenAICompatibleProvider({
+        baseUrl: config.ai.chatBaseUrl,
+        model: config.ai.chatModel,
+        apiKey: config.ai.openaiKey,
+        timeoutMs,
+        maxTokens,
+      });
+  }
 }

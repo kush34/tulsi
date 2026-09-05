@@ -104,6 +104,21 @@ export async function resumeHistorySession(sessionId: string, actor: Actor) {
   return updated;
 }
 
+export async function cancelHistorySession(sessionId: string, actor: Actor) {
+  const session = await getSessionForActor(sessionId, actor);
+  assertTransition(session.status, "CANCELLED");
+  const updated = await db.historySession.update({
+    where: { id: session.id },
+    data: { status: "CANCELLED" },
+  });
+  await recordAuditEvent({
+    userId: actor.id,
+    event: "HISTORY.SESSION_CANCELLED",
+    metadata: { sessionId: session.id },
+  });
+  return updated;
+}
+
 export async function requestPatientReview(sessionId: string, actor: Actor, ip?: string) {
   let session = await getSessionForActor(sessionId, actor);
   if (session.status === "PAUSED") {
@@ -165,6 +180,8 @@ export async function listHistorySessions(
   }
   if (status) where.status = status;
 
+  const isStaff = actor.role !== Role.PATIENT;
+
   const [sessions, total] = await Promise.all([
     db.historySession.findMany({
       where,
@@ -180,6 +197,9 @@ export async function listHistorySessions(
         completedAt: true,
         createdAt: true,
         _count: { select: { answers: true, facts: true, flags: true } },
+        ...(isStaff
+          ? { patient: { select: { id: true, name: true, email: true } } }
+          : {}),
       },
     }),
     db.historySession.count({ where }),

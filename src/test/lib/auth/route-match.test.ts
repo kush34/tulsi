@@ -39,7 +39,7 @@ describe("isAuthPath", () => {
 
 describe("isProtectedPath", () => {
   it("matches all protected sections", () => {
-    for (const p of ["/dashboard", "/assesment", "/assessment", "/document", "/confirmation"]) {
+    for (const p of ["/dashboard", "/assessment", "/document", "/confirmation", "/profile"]) {
       expect(isProtectedPath(p)).toBe(true);
       expect(isProtectedPath(`${p}/123`)).toBe(true);
     }

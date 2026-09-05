@@ -68,6 +68,28 @@ export type Dictionary = {
       chooseAnswer: string;
     };
 
+    live: {
+      sectionLabel: string;
+      typePlaceholder: string;
+      send: string;
+      sending: string;
+      finish: string;
+      finishing: string;
+      redFlag: string;
+      loadError: string;
+      retry: string;
+      reviewReady: string;
+      reviewCta: string;
+      soundOn: string;
+      soundOff: string;
+      restart: string;
+      restartConfirm: string;
+      restarting: string;
+      micBlocked: string;
+      tapToStop: string;
+      aiFallback: string;
+    };
+
     questions: {
       defaultQuestion: string;
       options: {
@@ -93,12 +115,34 @@ export type Dictionary = {
     statusProcessed: string;
     statusProcessing: string;
     continue: string;
+    skip: string;
+    recordsEmpty: string;
     qrTitle: string;
     qrHint: string;
     docNames: {
       prescription: string;
       labReport: string;
       dischargeSummary: string;
+      other: string;
+    };
+    phone: {
+      title: string;
+      subtitle: string;
+      chooseFile: string;
+      docType: string;
+      upload: string;
+      uploading: string;
+      uploadAnother: string;
+      success: string;
+      genericError: string;
+      invalidTitle: string;
+      invalidBody: string;
+      types: {
+        prescription: string;
+        labReport: string;
+        dischargeSummary: string;
+        other: string;
+      };
     };
   };
 
@@ -113,6 +157,31 @@ export type Dictionary = {
     documentsProcessed: string; // use "{count}" as placeholder, e.g. "{count} documents processed"
     edit: string;
     confirmAndFinish: string;
+    review: {
+      loading: string;
+      loadError: string;
+      retry: string;
+      emptyTitle: string;
+      emptyBody: string;
+      startAssessment: string;
+      summaryTitle: string;
+      alertsTitle: string;
+      missingTitle: string;
+      confirmedTitle: string;
+      confirmedBody: string;
+      confirming: string;
+      save: string;
+      saving: string;
+      cancel: string;
+    };
+  };
+
+  profile: {
+    role: string;
+    signOut: string;
+    signingOut: string;
+    signOutError: string;
+    back: string;
   };
 
   doctorDashboard: {
@@ -139,10 +208,37 @@ export type Dictionary = {
     };
     editSummary: string;
     confirm: string;
+    worklist: {
+      loading: string;
+      loadError: string;
+      retry: string;
+      emptyTitle: string;
+      emptyBody: string;
+      answersCount: string;
+      verified: string;
+      verify: string;
+      resolve: string;
+      dismiss: string;
+      finalize: string;
+      finalizing: string;
+      finalized: string;
+      timelineEmpty: string;
+      documentsEmpty: string;
+      missingTitle: string;
+      summaryTitle: string;
+      alertsTitle: string;
+      verifiedByDoctor: string;
+      confirmedByPatient: string;
+      collected: string;
+    };
   };
 };
 
-type PartialDictionary = Partial<Dictionary>;
+type DeepPartial<T> = T extends string | number | boolean | null | undefined
+  ? T
+  : { [K in keyof T]?: DeepPartial<T[K]> };
+
+type PartialDictionary = DeepPartial<Dictionary>;
 
 const english: Dictionary = {
   welcome: {
@@ -169,6 +265,27 @@ const english: Dictionary = {
       tapToSpeak: "Tap to speak",
       transcript: "I'm listening. Tell us what brings you here.",
       chooseAnswer: "Choose the option that best describes how you feel.",
+    },
+    live: {
+      sectionLabel: "Section",
+      typePlaceholder: "Type your answer or tap the mic to speak…",
+      send: "Send",
+      sending: "Sending…",
+      finish: "Finish assessment",
+      finishing: "Finishing…",
+      redFlag: "Some of your answers need urgent review by the clinical team. This assistant does not diagnose — a doctor will review everything.",
+      loadError: "Could not load your assessment. Please check your connection and retry.",
+      retry: "Retry",
+      reviewReady: "No more questions for now. Review your answers with the clinical team.",
+      reviewCta: "Review answers",
+      soundOn: "Sound on",
+      soundOff: "Muted",
+      restart: "Restart",
+      restartConfirm: "Tap again to confirm restart",
+      restarting: "Restarting…",
+      micBlocked: "Microphone is blocked — allow access in the browser, or type your answer instead.",
+      tapToStop: "Tap to pause",
+      aiFallback: "Fallback questions",
     },
     preliminaryNotice:
       "Your answers help prepare a preliminary assessment for the clinical team.",
@@ -226,12 +343,34 @@ const english: Dictionary = {
     statusProcessed: "Processed",
     statusProcessing: "Processing...",
     continue: "Continue",
+    skip: "Skip for now",
+    recordsEmpty: "No medical records yet. Scan the code with your phone to add your first report.",
     qrTitle: "Upload via Mobile",
     qrHint: "Scan this QR code with your phone to upload files directly",
     docNames: {
       prescription: "Prescription",
       labReport: "Lab Report",
       dischargeSummary: "Discharge Summary",
+      other: "Other",
+    },
+    phone: {
+      title: "Upload medical report",
+      subtitle: "Choose a file from your phone. It will appear on the kiosk screen.",
+      chooseFile: "Choose file",
+      docType: "Document type",
+      upload: "Upload",
+      uploading: "Uploading…",
+      uploadAnother: "Upload another",
+      success: "Uploaded! You can upload another file or return to the kiosk.",
+      genericError: "Something went wrong. Please try again.",
+      invalidTitle: "This link has expired",
+      invalidBody: "Ask the kiosk to show a fresh QR code and try again.",
+      types: {
+        prescription: "Prescription",
+        labReport: "Lab Report",
+        dischargeSummary: "Discharge Summary",
+        other: "Other",
+      },
     },
   },
   confirmation: {
@@ -245,6 +384,30 @@ const english: Dictionary = {
     documentsProcessed: "{count} documents processed",
     edit: "Edit",
     confirmAndFinish: "Confirm & Finish",
+    review: {
+      loading: "Loading your review…",
+      loadError: "Could not load your review. Please retry.",
+      retry: "Retry",
+      emptyTitle: "No review ready yet",
+      emptyBody: "Finish the voice assessment first — your answers will appear here for review.",
+      startAssessment: "Start assessment",
+      summaryTitle: "Summary for the doctor",
+      alertsTitle: "Flagged for the clinical team",
+      missingTitle: "Still missing",
+      confirmedTitle: "Sent to the doctor",
+      confirmedBody: "Thank you. A doctor will now review your history, verify it, and make the diagnosis.",
+      confirming: "Confirming…",
+      save: "Save",
+      saving: "Saving…",
+      cancel: "Cancel",
+    },
+  },
+  profile: {
+    role: "Role",
+    signOut: "Sign out",
+    signingOut: "Signing out…",
+    signOutError: "Could not sign out. Please try again.",
+    back: "Back",
   },
   doctorDashboard: {
     brand: "MediKiosk",
@@ -270,6 +433,29 @@ const english: Dictionary = {
     },
     editSummary: "Edit Summary",
     confirm: "Confirm",
+    worklist: {
+      loading: "Loading worklist…",
+      loadError: "Could not load the worklist.",
+      retry: "Retry",
+      emptyTitle: "Queue is clear",
+      emptyBody: "No patient histories are waiting for doctor review right now.",
+      answersCount: "{count} answers",
+      verified: "Verified",
+      verify: "Verify",
+      resolve: "Resolve",
+      dismiss: "Dismiss",
+      finalize: "Verify & Complete",
+      finalizing: "Completing…",
+      finalized: "Verified by doctor",
+      timelineEmpty: "No conversation recorded for this session.",
+      documentsEmpty: "No documents attached to this session yet.",
+      missingTitle: "Still missing",
+      summaryTitle: "Draft summary",
+      alertsTitle: "Open alerts",
+      verifiedByDoctor: "Doctor verified",
+      confirmedByPatient: "Patient confirmed",
+      collected: "Collected",
+    },
   },
 };
 
@@ -1003,6 +1189,10 @@ export function getDictionary(locale: Locale): Dictionary {
       ...english.language,
       ...translation.language,
     },
+    profile: {
+      ...english.profile,
+      ...translation.profile,
+    },
     auth: {
       ...english.auth,
       ...translation.auth,
@@ -1026,6 +1216,10 @@ export function getDictionary(locale: Locale): Dictionary {
         ...english.assessment.voice,
         ...translation.assessment?.voice,
       },
+      live: {
+        ...english.assessment.live,
+        ...translation.assessment?.live,
+      },
       questions: {
         ...english.assessment.questions,
         ...translation.assessment?.questions,
@@ -1042,10 +1236,22 @@ export function getDictionary(locale: Locale): Dictionary {
         ...english.patientDocuments.docNames,
         ...translation.patientDocuments?.docNames,
       },
+      phone: {
+        ...english.patientDocuments.phone,
+        ...translation.patientDocuments?.phone,
+        types: {
+          ...english.patientDocuments.phone.types,
+          ...translation.patientDocuments?.phone?.types,
+        },
+      },
     },
     confirmation: {
       ...english.confirmation,
       ...translation.confirmation,
+      review: {
+        ...english.confirmation.review,
+        ...translation.confirmation?.review,
+      },
     },
     doctorDashboard: {
       ...english.doctorDashboard,
@@ -1057,6 +1263,10 @@ export function getDictionary(locale: Locale): Dictionary {
       fields: {
         ...english.doctorDashboard.fields,
         ...translation.doctorDashboard?.fields,
+      },
+      worklist: {
+        ...english.doctorDashboard.worklist,
+        ...translation.doctorDashboard?.worklist,
       },
     },
   };

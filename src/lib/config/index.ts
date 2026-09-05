@@ -24,12 +24,24 @@ export const config = {
     timeoutMs: env.AI_TIMEOUT_MS,
     openaiKey: env.OPENAI_API_KEY,
     anthropicKey: env.ANTHROPIC_API_KEY,
+    openrouter: {
+      apiKey: env.OPENROUTER_API_KEY,
+      model: env.OPENROUTER_MODEL,
+      baseUrl: env.OPENROUTER_BASE_URL,
+    },
+    ollama: {
+      baseUrl: env.OLLAMA_BASE_URL,
+      model: env.OLLAMA_MODEL,
+    },
   },
   storage: {
     bucket: env.S3_BUCKET,
     region: env.S3_REGION,
     accessKeyId: env.S3_ACCESS_KEY_ID,
     secretAccessKey: env.S3_SECRET_ACCESS_KEY,
+    supabaseUrl: env.SUPABASE_URL,
+    supabaseServiceKey: env.SUPABASE_SERVICE_ROLE_KEY,
+    docsBucket: env.SUPABASE_DOCS_BUCKET,
   },
   notifications: {
     resendApiKey: env.RESEND_API_KEY,

@@ -12,8 +12,5 @@ export default async function DocumentPage({ params }: Props) {
   const { locale } = await params;
   await requirePageSession(locale, `/${locale}/document`);
 
-  // Replace with your actual patient lookup (session/cookie/db).
-  const patientId = "demo-patient-id";
-
-  return <PatientDocuments locale={locale} patientId={patientId} />;
+  return <PatientDocuments locale={locale} />;
 }
