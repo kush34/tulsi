@@ -2,8 +2,9 @@ import NextAuth from "next-auth";
 import Credentials from "next-auth/providers/credentials";
 import { PrismaAdapter } from "@auth/prisma-adapter";
 import { db } from "@/db";
-import { verifyPassword } from "@/lib/auth/password";
 import { recordAuditEvent } from "@/lib/auth/notifications";
+import { consumeEmailOtp, OtpVerifyError } from "@/lib/auth/email-otp-service";
+import { rateLimit } from "@/lib/auth/rate-limiter";
 import type { Role } from "@prisma/client";
 import { config } from "@/lib/config";
 
@@ -14,29 +15,47 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
     strategy: "jwt",
     maxAge: 30 * 24 * 60 * 60,
   },
-  pages: {
-    signIn: "/login",
-  },
   providers: [
     Credentials({
+      id: "email-otp",
+      name: "Email OTP",
       credentials: {
         email: { label: "Email", type: "email" },
-        password: { label: "Password", type: "password" },
+        otp: { label: "OTP", type: "text" },
       },
       async authorize(credentials) {
-        const email = credentials?.email as string | undefined;
-        const password = credentials?.password as string | undefined;
-        if (!email || !password) return null;
+        const rawEmail = credentials?.email as string | undefined;
+        const rawOtp = credentials?.otp as string | undefined;
+        if (!rawEmail || !rawOtp) return null;
 
-        const user = await db.user.findUnique({
-          where: { email },
-        });
+        const throttle = rateLimit(
+          `OTP_VERIFY:${rawEmail.trim().toLowerCase()}`,
+          10,
+          15 * 60 * 1000,
+        );
+        if (!throttle.success) return null;
 
-        if (!user || !user.passwordHash) return null;
+        let email: string;
+        try {
+          email = await consumeEmailOtp(rawEmail, rawOtp);
+        } catch (err) {
+          if (err instanceof OtpVerifyError) return null;
+          throw err;
+        }
+
+        let user = await db.user.findUnique({ where: { email } });
+        if (!user) {
+          user = await db.user.create({
+            data: { email, isActive: true, isVerified: true, role: "PATIENT" },
+          });
+        }
         if (!user.isActive) return null;
-
-        const valid = await verifyPassword(password, user.passwordHash);
-        if (!valid) return null;
+        if (!user.isVerified) {
+          await db.user.update({
+            where: { id: user.id },
+            data: { isVerified: true },
+          });
+        }
 
         return {
           id: user.id,
@@ -51,7 +70,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
     async jwt({ token, user }) {
       if (user) {
         token.id = user.id as string;
-        token.role = user.role as Role;
+        token.role = (user.role as Role) ?? "PATIENT";
       }
       return token;
     },
@@ -63,11 +82,11 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
       return session;
     },
     async signIn({ user }) {
-      if (user.id && user.role) {
+      if (user.id) {
         await recordAuditEvent({
           userId: user.id as string,
           event: "AUTH.SIGN_IN",
-          metadata: { provider: "credentials" },
+          metadata: { provider: "email-otp" },
         });
       }
       return true;

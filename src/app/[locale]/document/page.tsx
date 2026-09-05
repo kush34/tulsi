@@ -1,4 +1,5 @@
 import PatientDocuments from "@/components/document/patient-document";
+import { requirePageSession } from "@/lib/auth/page-guard";
 import type { Locale } from "@/i8n/config";
 
 type Props = {
@@ -9,6 +10,7 @@ type Props = {
 
 export default async function DocumentPage({ params }: Props) {
   const { locale } = await params;
+  await requirePageSession(locale, `/${locale}/document`);
 
   // Replace with your actual patient lookup (session/cookie/db).
   const patientId = "demo-patient-id";

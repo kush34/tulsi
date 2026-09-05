@@ -1,4 +1,5 @@
 import DoctorDashboard from "@/components/dashboard/dashbord";
+import { requirePageSession } from "@/lib/auth/page-guard";
 import type { Locale } from "@/i8n/config";
 
 type Props = {
@@ -9,6 +10,7 @@ type Props = {
 
 export default async function DoctorDashboardPage({ params }: Props) {
   const { locale } = await params;
+  await requirePageSession(locale, `/${locale}/dashboard`);
 
   // Replace with your actual queue/patient lookup.
   const queue = [

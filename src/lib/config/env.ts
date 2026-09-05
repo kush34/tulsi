@@ -24,6 +24,7 @@ const envSchema = z.object({
   S3_SECRET_ACCESS_KEY: z.string().optional().default(""),
 
   RESEND_API_KEY: z.string().optional().default(""),
+  EMAIL_FROM: z.string().optional().default("Tulsi <onboarding@resend.dev>"),
   SMTP_HOST: z.string().optional().default(""),
   SMTP_PORT: z.coerce.number().optional().default(587),
   SMTP_USER: z.string().optional().default(""),

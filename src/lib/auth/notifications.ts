@@ -1,3 +1,4 @@
+import { Resend } from "resend";
 import { db } from "@/db";
 import { createLogger } from "@/lib/logging";
 import { config } from "@/lib/config";
@@ -5,34 +6,28 @@ import { Prisma } from "@prisma/client";
 
 const log = createLogger("notifications");
 
-export async function sendOtp(phoneOrEmail: string, code: string, purpose: string): Promise<void> {
-  const { storage, notifications } = config;
-  void purpose;
-
-  if (notifications.resendApiKey) {
+export async function sendOtp(
+  email: string,
+  code: string,
+  purpose: string,
+): Promise<void> {
+  if (config.notifications.resendApiKey) {
     try {
-      const res = await fetch("https://api.resend.com/emails", {
-        method: "POST",
-        headers: {
-          Authorization: `Bearer ${notifications.resendApiKey}`,
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          from: `Tulsi <onboarding@${notifications.smtp.host || "tulsi.dev"}>`,
-          to: [phoneOrEmail],
-          subject: "Your verification code",
-          text: `Your Tulsi verification code is: ${code}`,
-        }),
+      const resend = new Resend(config.notifications.resendApiKey);
+      const { error } = await resend.emails.send({
+        from: config.notifications.from,
+        to: [email],
+        subject: "Your verification code",
+        text: `Your Tulsi verification code is: ${code}`,
       });
-      if (!res.ok) throw new Error(`Resend failed: ${res.status}`);
+      if (error) throw error;
       return;
-    } catch (error) {
-      log.error({ err: error }, "Failed to send OTP via Resend, falling back to log");
+    } catch (err) {
+      log.error({ err }, "Failed to send OTP via Resend, falling back to log");
     }
   }
 
-  void storage;
-  log.info({ to: phoneOrEmail, code, purpose }, "[DEV] OTP send placeholder");
+  log.info({ to: email, code, purpose }, "[DEV] OTP send placeholder");
 }
 
 export async function recordAuditEvent(input: {

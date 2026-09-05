@@ -22,7 +22,7 @@ export type Dictionary = {
     brand: string;
     clinicalIntake: string;
 
-    phone: {
+    email: {
       title: string;
       subtitle: string;
       label: string;
@@ -44,7 +44,7 @@ export type Dictionary = {
     };
 
     errors: {
-      invalidPhone: string;
+      invalidEmail: string;
       unableToSend: string;
       somethingWentWrong: string;
       invalidOtpLength: string;
@@ -54,7 +54,7 @@ export type Dictionary = {
 
     security: string;
   };
-
+  
   assessment: {
     stepOf: string;
     subtitle: string;
@@ -185,27 +185,27 @@ const english: Dictionary = {
   auth: {
     brand: "MediKiosk",
     clinicalIntake: "Clinical Intake",
-    phone: {
+    email: {
       title: "Welcome to MediKiosk",
-      subtitle: "Enter your mobile number to continue.",
-      label: "Mobile number",
-      placeholder: "Enter mobile number",
+      subtitle: "Enter your email address to continue.",
+      label: "Email address",
+      placeholder: "Enter email address",
       continue: "Continue",
       sendingOtp: "Sending OTP...",
-      otpInfo: "We'll send a one-time password to your mobile number.",
+      otpInfo: "We'll send a one-time password to your email address.",
     },
     otp: {
-      title: "Verify your number",
+      title: "Verify your email",
       subtitle: "Enter the 6-digit OTP sent to",
       verify: "Verify & Continue",
       verifying: "Verifying...",
       didntReceive: "Didn't receive the OTP?",
       resend: "Resend OTP",
       resendIn: "Resend in {seconds}s",
-      changeNumber: "Change mobile number",
+      changeNumber: "Change email",
     },
     errors: {
-      invalidPhone: "Enter a valid 10-digit mobile number.",
+      invalidEmail: "Enter a valid email address.",
       unableToSend: "Unable to send OTP.",
       somethingWentWrong: "Something went wrong.",
       invalidOtpLength: "Enter the 6-digit OTP.",
@@ -280,27 +280,27 @@ const translations: Partial<Record<Locale, PartialDictionary>> = {
     auth: {
       brand: "MediKiosk",
       clinicalIntake: "चिकित्सीय जानकारी",
-      phone: {
+      email: {
         title: "MediKiosk में आपका स्वागत है",
-        subtitle: "जारी रखने के लिए अपना मोबाइल नंबर दर्ज करें।",
-        label: "मोबाइल नंबर",
-        placeholder: "मोबाइल नंबर दर्ज करें",
+        subtitle: "जारी रखने के लिए अपना ईमेल पता दर्ज करें।",
+        label: "ईमेल पता",
+        placeholder: "ईमेल पता दर्ज करें",
         continue: "जारी रखें",
         sendingOtp: "OTP भेजा जा रहा है...",
-        otpInfo: "हम आपके मोबाइल नंबर पर एक बार उपयोग होने वाला पासवर्ड भेजेंगे।",
+        otpInfo: "हम आपके ईमेल पते पर एक बार उपयोग होने वाला पासवर्ड भेजेंगे।",
       },
       otp: {
-        title: "अपना नंबर सत्यापित करें",
+        title: "अपना ईमेल सत्यापित करें",
         subtitle: "भेजा गया 6 अंकों का OTP दर्ज करें",
         verify: "सत्यापित करें और जारी रखें",
         verifying: "सत्यापित किया जा रहा है...",
         didntReceive: "OTP प्राप्त नहीं हुआ?",
         resend: "OTP दोबारा भेजें",
         resendIn: "{seconds} सेकंड में दोबारा भेजें",
-        changeNumber: "मोबाइल नंबर बदलें",
+        changeNumber: "ईमेल बदलें",
       },
       errors: {
-        invalidPhone: "एक मान्य 10 अंकों का मोबाइल नंबर दर्ज करें।",
+        invalidEmail: "एक मान्य ईमेल पता दर्ज करें।",
         unableToSend: "OTP भेजने में असमर्थ।",
         somethingWentWrong: "कुछ गलत हो गया।",
         invalidOtpLength: "6 अंकों का OTP दर्ज करें।",
@@ -398,27 +398,27 @@ const translations: Partial<Record<Locale, PartialDictionary>> = {
     auth: {
       brand: "MediKiosk",
       clinicalIntake: "क्लिनिकल माहिती",
-      phone: {
+      email: {
         title: "MediKiosk मध्ये आपले स्वागत आहे",
-        subtitle: "पुढे जाण्यासाठी आपला मोबाइल नंबर प्रविष्ट करा.",
-        label: "मोबाइल नंबर",
-        placeholder: "मोबाइल नंबर प्रविष्ट करा",
+        subtitle: "पुढे जाण्यासाठी आपला ईमेल पत्ता प्रविष्ट करा.",
+        label: "ईमेल पत्ता",
+        placeholder: "ईमेल पत्ता प्रविष्ट करा",
         continue: "पुढे जा",
         sendingOtp: "OTP पाठवत आहे...",
-        otpInfo: "आम्ही आपल्या मोबाइल नंबरवर एकदाच वापरता येणारा पासवर्ड पाठवू.",
+        otpInfo: "आम्ही आपल्या ईमेल पत्त्यावर एकदाच वापरता येणारा पासवर्ड पाठवू.",
       },
       otp: {
-        title: "आपला नंबर सत्यापित करा",
+        title: "आपला ईमेल सत्यापित करा",
         subtitle: "पाठवलेला 6 अंकी OTP प्रविष्ट करा",
         verify: "सत्यापित करा आणि पुढे जा",
         verifying: "सत्यापन सुरू आहे...",
         didntReceive: "OTP मिळाला नाही?",
         resend: "OTP पुन्हा पाठवा",
         resendIn: "{seconds} सेकंदांनी पुन्हा पाठवा",
-        changeNumber: "मोबाइल नंबर बदला",
+        changeNumber: "ईमेल बदला",
       },
       errors: {
-        invalidPhone: "वैध 10 अंकी मोबाइल नंबर प्रविष्ट करा.",
+        invalidEmail: "वैध ईमेल पत्ता प्रविष्ट करा.",
         unableToSend: "OTP पाठवता आला नाही.",
         somethingWentWrong: "काहीतरी चूक झाली.",
         invalidOtpLength: "6 अंकी OTP प्रविष्ट करा.",
@@ -516,27 +516,27 @@ const translations: Partial<Record<Locale, PartialDictionary>> = {
     auth: {
       brand: "MediKiosk",
       clinicalIntake: "ক্লিনিক্যাল তথ্য",
-      phone: {
+      email: {
         title: "MediKiosk-এ স্বাগতম",
-        subtitle: "চালিয়ে যেতে আপনার মোবাইল নম্বর লিখুন।",
-        label: "মোবাইল নম্বর",
-        placeholder: "মোবাইল নম্বর লিখুন",
+        subtitle: "চালিয়ে যেতে আপনার ইমেল ঠিকানা লিখুন।",
+        label: "ইমেল ঠিকানা",
+        placeholder: "ইমেল ঠিকানা লিখুন",
         continue: "চালিয়ে যান",
         sendingOtp: "OTP পাঠানো হচ্ছে...",
-        otpInfo: "আমরা আপনার মোবাইল নম্বরে একটি একবার ব্যবহারযোগ্য পাসওয়ার্ড পাঠাব।",
+        otpInfo: "আমরা আপনার ইমেল ঠিকানায় একটি একবার ব্যবহারযোগ্য পাসওয়ার্ড পাঠাব।",
       },
       otp: {
-        title: "আপনার নম্বর যাচাই করুন",
+        title: "আপনার ইমেল যাচাই করুন",
         subtitle: "পাঠানো ৬ সংখ্যার OTP লিখুন",
         verify: "যাচাই করুন ও চালিয়ে যান",
         verifying: "যাচাই করা হচ্ছে...",
         didntReceive: "OTP পাননি?",
         resend: "OTP আবার পাঠান",
         resendIn: "{seconds} সেকেন্ড পরে আবার পাঠান",
-        changeNumber: "মোবাইল নম্বর পরিবর্তন করুন",
+        changeNumber: "ইমেল পরিবর্তন করুন",
       },
       errors: {
-        invalidPhone: "একটি বৈধ ১০ সংখ্যার মোবাইল নম্বর লিখুন।",
+        invalidEmail: "একটি বৈধ ইমেল ঠিকানা লিখুন।",
         unableToSend: "OTP পাঠানো যায়নি।",
         somethingWentWrong: "কিছু ভুল হয়েছে।",
         invalidOtpLength: "৬ সংখ্যার OTP লিখুন।",
@@ -634,27 +634,27 @@ const translations: Partial<Record<Locale, PartialDictionary>> = {
     auth: {
       brand: "MediKiosk",
       clinicalIntake: "மருத்துவ தகவல்",
-      phone: {
+      email: {
         title: "MediKiosk-க்கு வரவேற்கிறோம்",
-        subtitle: "தொடர உங்கள் மொபைல் எண்ணை உள்ளிடவும்.",
-        label: "மொபைல் எண்",
-        placeholder: "மொபைல் எண்ணை உள்ளிடவும்",
+        subtitle: "தொடர உங்கள் மின்னஞ்சல் முகவரியை உள்ளிடவும்.",
+        label: "மின்னஞ்சல் முகவரி",
+        placeholder: "மின்னஞ்சல் முகவரியை உள்ளிடவும்",
         continue: "தொடரவும்",
         sendingOtp: "OTP அனுப்பப்படுகிறது...",
-        otpInfo: "உங்கள் மொபைல் எண்ணுக்கு ஒரு முறை பயன்படுத்தக்கூடிய கடவுச்சொல்லை அனுப்புவோம்.",
+        otpInfo: "உங்கள் மின்னஞ்சல் முகவரிக்கு ஒரு முறை பயன்படுத்தக்கூடிய கடவுச்சொல்லை அனுப்புவோம்.",
       },
       otp: {
-        title: "உங்கள் எண்ணை சரிபார்க்கவும்",
+        title: "உங்கள் மின்னஞ்சலை சரிபார்க்கவும்",
         subtitle: "அனுப்பப்பட்ட 6 இலக்க OTP-ஐ உள்ளிடவும்",
         verify: "சரிபார்த்து தொடரவும்",
         verifying: "சரிபார்க்கப்படுகிறது...",
         didntReceive: "OTP கிடைக்கவில்லையா?",
         resend: "OTP-ஐ மீண்டும் அனுப்பவும்",
         resendIn: "{seconds} வினாடிகளில் மீண்டும் அனுப்பவும்",
-        changeNumber: "மொபைல் எண்ணை மாற்றவும்",
+        changeNumber: "மின்னஞ்சலை மாற்றவும்",
       },
       errors: {
-        invalidPhone: "சரியான 10 இலக்க மொபைல் எண்ணை உள்ளிடவும்.",
+        invalidEmail: "சரியான மின்னஞ்சல் முகவரியை உள்ளிடவும்.",
         unableToSend: "OTP அனுப்ப முடியவில்லை.",
         somethingWentWrong: "ஏதோ தவறு ஏற்பட்டது.",
         invalidOtpLength: "6 இலக்க OTP-ஐ உள்ளிடவும்.",
@@ -752,27 +752,27 @@ const translations: Partial<Record<Locale, PartialDictionary>> = {
     auth: {
       brand: "MediKiosk",
       clinicalIntake: "క్లినికల్ సమాచారం",
-      phone: {
+      email: {
         title: "MediKiosk కు స్వాగతం",
-        subtitle: "కొనసాగించడానికి మీ మొబైల్ నంబర్‌ను నమోదు చేయండి.",
-        label: "మొబైల్ నంబర్",
-        placeholder: "మొబైల్ నంబర్‌ను నమోదు చేయండి",
+        subtitle: "కొనసాగించడానికి మీ ఇమెయిల్ చిరునామాను నమోదు చేయండి.",
+        label: "ఇమెయిల్ చిరునామా",
+        placeholder: "ఇమెయిల్ చిరునామాను నమోదు చేయండి",
         continue: "కొనసాగించండి",
         sendingOtp: "OTP పంపుతోంది...",
-        otpInfo: "మీ మొబైల్ నంబర్‌కు ఒకసారి ఉపయోగించే పాస్‌వర్డ్‌ను పంపుతాము.",
+        otpInfo: "మీ ఇమెయిల్ చిరునామాకు ఒకసారి ఉపయోగించే పాస్‌వర్డ్‌ను పంపుతాము.",
       },
       otp: {
-        title: "మీ నంబర్‌ను ధృవీకరించండి",
+        title: "మీ ఇమెయిల్‌ను ధృవీకరించండి",
         subtitle: "పంపిన 6 అంకెల OTPని నమోదు చేయండి",
         verify: "ధృవీకరించి కొనసాగించండి",
         verifying: "ధృవీకరిస్తోంది...",
         didntReceive: "OTP అందలేదా?",
         resend: "OTPని మళ్లీ పంపండి",
         resendIn: "{seconds} సెకన్లలో మళ్లీ పంపండి",
-        changeNumber: "మొబైల్ నంబర్ మార్చండి",
+        changeNumber: "ఇమెయిల్ మార్చండి",
       },
       errors: {
-        invalidPhone: "చెల్లుబాటు అయ్యే 10 అంకెల మొబైల్ నంబర్‌ను నమోదు చేయండి.",
+        invalidEmail: "చెల్లుబాటు అయ్యే ఇమెయిల్ చిరునామాను నమోదు చేయండి.",
         unableToSend: "OTP పంపడం సాధ్యం కాలేదు.",
         somethingWentWrong: "ఏదో తప్పు జరిగింది.",
         invalidOtpLength: "6 అంకెల OTPని నమోదు చేయండి.",
@@ -870,27 +870,27 @@ const translations: Partial<Record<Locale, PartialDictionary>> = {
     auth: {
       brand: "MediKiosk",
       clinicalIntake: "ક્લિનિકલ માહિતી",
-      phone: {
+      email: {
         title: "MediKiosk માં આપનું સ્વાગત છે",
-        subtitle: "આગળ વધવા માટે તમારો મોબાઇલ નંબર દાખલ કરો.",
-        label: "મોબાઇલ નંબર",
-        placeholder: "મોબાઇલ નંબર દાખલ કરો",
+        subtitle: "આગળ વધવા માટે તમારું ઇમેઇલ સરનામું દાખલ કરો.",
+        label: "ઇમેઇલ સરનામું",
+        placeholder: "ઇમેઇલ સરનામું દાખલ કરો",
         continue: "આગળ વધો",
         sendingOtp: "OTP મોકલવામાં આવી રહ્યો છે...",
-        otpInfo: "અમે તમારા મોબાઇલ નંબર પર એક વખત ઉપયોગ કરી શકાય તેવો પાસવર્ડ મોકલીશું.",
+        otpInfo: "અમે તમારા ઇમેઇલ સરનામાં પર એક વખત ઉપયોગ કરી શકાય તેવો પાસવર્ડ મોકલીશું.",
       },
       otp: {
-        title: "તમારો નંબર ચકાસો",
+        title: "તમારું ઇમેઇલ ચકાસો",
         subtitle: "મોકલવામાં આવેલ 6 અંકનો OTP દાખલ કરો",
         verify: "ચકાસો અને આગળ વધો",
         verifying: "ચકાસણી થઈ રહી છે...",
         didntReceive: "OTP મળ્યો નથી?",
         resend: "OTP ફરીથી મોકલો",
         resendIn: "{seconds} સેકન્ડમાં ફરીથી મોકલો",
-        changeNumber: "મોબાઇલ નંબર બદલો",
+        changeNumber: "ઇમેઇલ બદલો",
       },
       errors: {
-        invalidPhone: "માન્ય 10 અંકનો મોબાઇલ નંબર દાખલ કરો.",
+        invalidEmail: "માન્ય ઇમેઇલ સરનામું દાખલ કરો.",
         unableToSend: "OTP મોકલી શકાયો નથી.",
         somethingWentWrong: "કંઈક ખોટું થયું.",
         invalidOtpLength: "6 અંકનો OTP દાખલ કરો.",
@@ -1006,9 +1006,9 @@ export function getDictionary(locale: Locale): Dictionary {
     auth: {
       ...english.auth,
       ...translation.auth,
-      phone: {
-        ...english.auth.phone,
-        ...translation.auth?.phone,
+      email: {
+        ...english.auth.email,
+        ...translation.auth?.email,
       },
       otp: {
         ...english.auth.otp,

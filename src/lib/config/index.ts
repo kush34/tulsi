@@ -33,6 +33,7 @@ export const config = {
   },
   notifications: {
     resendApiKey: env.RESEND_API_KEY,
+    from: env.EMAIL_FROM,
     smtp: {
       host: env.SMTP_HOST,
       port: env.SMTP_PORT,
